@@ -2,169 +2,316 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Deesha's Special Day 🎉</title>
+<title>For Deesha 🎂</title>
 
 <style>
-body {
-  margin: 0;
-  overflow: hidden;
-  font-family: Arial;
-  background: black;
-  color: white;
-  text-align: center;
+body{
+  margin:0;
+  background:black;
+  color:white;
+  font-family:Segoe UI;
+  text-align:center;
+  overflow:hidden;
 }
 
-.container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.screen{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:90%;
+  opacity:0;
+  transition:1s;
+}
+.show{opacity:1;}
+
+h1{color:#ff66aa;}
+button{
+  padding:12px 20px;
+  border:none;
+  border-radius:20px;
+  background:#ff66aa;
+  color:white;
+  margin-top:20px;
+  font-size:16px;
 }
 
-.hidden { display: none; }
-
-.glow {
-  font-size: 40px;
-  text-shadow: 0 0 20px pink;
+/* cake glow */
+#cake{
+  font-size:90px;
+  text-shadow:0 0 20px orange, 0 0 40px red;
+  animation: glow 1s infinite alternate;
+}
+@keyframes glow{
+  from{ text-shadow:0 0 10px orange; }
+  to{ text-shadow:0 0 40px red; }
 }
 
-button {
-  padding: 12px 20px;
-  font-size: 18px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  background: white;
-  color: black;
+/* floating */
+@keyframes float{
+  from{transform:translateY(100vh);}
+  to{transform:translateY(-10vh);}
 }
 
-/* Floating animation */
-@keyframes float {
-  from { transform: translateY(100vh); }
-  to { transform: translateY(-10vh); }
+.balloon,.butterfly{
+  position:absolute;
+  animation:float linear infinite;
 }
 
-.balloon {
-  position: absolute;
-  width: 40px;
-  height: 60px;
-  background: pink;
-  border-radius: 50%;
-  animation: float 6s linear infinite;
+.sparkle{
+  position:absolute;
+  width:4px;
+  height:4px;
+  background:white;
+  animation:float 3s linear infinite;
 }
 
-.butterfly {
-  position: absolute;
-  font-size: 25px;
-  animation: float 8s linear infinite;
+/* confetti */
+@keyframes fall{
+  to{transform:translateY(100vh);}
 }
 
-.sparkle {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  background: white;
-  animation: float 3s linear infinite;
+/* name animation */
+@keyframes fly{
+  from{transform:translateY(-100px);opacity:0;}
+  to{transform:translateY(0);opacity:1;}
 }
 
-img {
-  width: 130px;
-  margin: 10px;
-  border-radius: 12px;
+/* slideshow */
+.slide{
+  width:230px;
+  border-radius:10px;
+  display:none;
+}
+.active{display:block;}
+
+/* player */
+#player{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#111;
+  padding:10px 20px;
+  border-radius:20px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Countdown -->
-<div class="container" id="countdown">
-  <h1 class="glow">Deesha's Special Day 🎂</h1>
+<!-- 1 MYSTERY -->
+<div id="s1" class="screen show">
+  <h1 id="typing"></h1>
+</div>
+
+<!-- 2 COUNTDOWN -->
+<div id="s2" class="screen">
+  <h1>Get Ready 🎉</h1>
   <h2 id="timer">5</h2>
 </div>
 
-<!-- Stage -->
-<div class="container hidden" id="stage">
-  <h1 class="glow">Lights ON ✨</h1>
-  <button onclick="startMusic()">Play Music 🎵</button>
+<!-- 3 CAKE -->
+<div id="s3" class="screen">
+  <h1 id="nameAnim"></h1>
+  <div id="cake">🎂</div>
+  <button onclick="blow()">Blow Candles 🕯️</button>
 </div>
 
-<!-- Message -->
-<div class="container hidden" id="message">
-  <h2>
-  On This Beautiful Day, I Only Pray To God... ❤️<br><br>
-  "May Your Birthday Be As Bright As Your Smile.<br>
-  And As Beautiful As Your Heart."♡<br><br>
-  Happy Birthday Deesha 🎉
-  </h2>
+<!-- 4 LIGHT -->
+<div id="s4" class="screen">
+  <h1>Lights ON ✨</h1>
+  <button onclick="next()">Continue</button>
 </div>
 
-<!-- Gallery -->
-<div class="container hidden" id="gallery">
+<!-- 5 MESSAGE -->
+<div id="s5" class="screen">
+  <div id="msg"></div>
+  <button onclick="next2()">Next ❤️</button>
+</div>
+
+<!-- 6 MEMORIES -->
+<div id="s6" class="screen">
   <h2>Memories 📸</h2>
-  <img src="D1.jpg">
-  <img src="D2.jpg">
+  <img class="slide active" src="D1.jpg">
+  <img class="slide" src="D2.jpg">
+  <video class="slide" width="230" controls>
+    <source src="video.mp4">
+  </video>
+</div>
+
+<!-- music -->
+<div id="player">
+  <button onclick="toggleMusic()">▶️</button>
+  <span>Now Playing 🎶</span>
 </div>
 
 <audio id="music" src="Deesha song.mp3"></audio>
+<audio id="beat" src="heartbeat.mp3"></audio>
 
 <script>
-// Countdown
-let time = 5;
-let timer = setInterval(() => {
-  time--;
-  document.getElementById("timer").innerText = time;
-  if(time === 0){
-    clearInterval(timer);
-    countdown.style.display="none";
-    stage.classList.remove("hidden");
+let music=document.getElementById("music");
+
+/* typing intro */
+let text="Hey Deesha...\nSomething special is waiting 💫";
+let i=0;
+function type(){
+  if(i<text.length){
+    typing.innerHTML+=text.charAt(i);
+    i++;
+    setTimeout(type,50);
+  } else setTimeout(()=>switchS(s1,s2),1000);
+}
+type();
+
+/* heartbeat */
+beat.play();
+
+/* countdown */
+let t=5;
+let cd=setInterval(()=>{
+  t--;
+  timer.innerText=t;
+  if(t==0){
+    clearInterval(cd);
+    switchS(s2,s3);
+    animateName();
   }
 },1000);
 
-// Start show
-function startMusic(){
-  music.play();
-  stage.classList.add("hidden");
-  message.classList.remove("hidden");
-  balloons();
-
-  setTimeout(()=>{
-    message.classList.add("hidden");
-    gallery.classList.remove("hidden");
-    butterflies();
-    sparkles();
-  },6000);
+/* name animation */
+function animateName(){
+  let name="DEESHA";
+  name.split("").forEach((l,i)=>{
+    let span=document.createElement("span");
+    span.innerText=l;
+    span.style.display="inline-block";
+    span.style.animation=`fly 1s ease ${i*0.2}s forwards`;
+    nameAnim.appendChild(span);
+  });
 }
 
-// Balloons
+/* blow candles */
+function blow(){
+  music.volume=0;
+  music.play();
+  fadeMusic();
+  confetti();
+  switchS(s3,s4);
+}
+
+/* fade music */
+function fadeMusic(){
+  let v=0;
+  let f=setInterval(()=>{
+    v+=0.05;
+    music.volume=v;
+    if(v>=1) clearInterval(f);
+  },200);
+}
+
+/* next */
+function next(){
+  switchS(s4,s5);
+  typeMsg();
+  balloons();
+}
+
+/* message typing */
+let msgText=`On this beautiful day... ❤️
+
+May your smile shine brighter than candles,
+and your heart stay as beautiful as ever ♡
+
+Happy Birthday Deesha 🎉
+
+(Also… you still owe me a treat 😄)`;
+let j=0;
+
+function typeMsg(){
+  if(j<msgText.length){
+    msg.innerHTML+=msgText.charAt(j);
+    j++;
+    setTimeout(typeMsg,40);
+  }
+}
+
+/* next memories */
+function next2(){
+  switchS(s5,s6);
+  butterflies();
+  sparkles();
+  slideshow();
+}
+
+/* switch */
+function switchS(a,b){
+  a.classList.remove("show");
+  setTimeout(()=>b.classList.add("show"),500);
+}
+
+/* confetti */
+function confetti(){
+  for(let i=0;i<50;i++){
+    let c=document.createElement("div");
+    c.innerHTML="🎉";
+    c.style.position="absolute";
+    c.style.left=Math.random()*100+"%";
+    c.style.top="-10px";
+    c.style.animation="fall 3s linear";
+    document.body.appendChild(c);
+  }
+}
+
+/* balloons */
 function balloons(){
   for(let i=0;i<10;i++){
     let b=document.createElement("div");
+    b.innerHTML="🎈";
     b.className="balloon";
     b.style.left=Math.random()*100+"%";
+    b.style.animationDuration=(4+Math.random()*3)+"s";
     document.body.appendChild(b);
   }
 }
 
-// Butterflies
+/* butterflies */
 function butterflies(){
   for(let i=0;i<8;i++){
     let b=document.createElement("div");
-    b.className="butterfly";
     b.innerHTML="🦋";
+    b.className="butterfly";
     b.style.left=Math.random()*100+"%";
+    b.style.animationDuration=(5+Math.random()*3)+"s";
     document.body.appendChild(b);
   }
 }
 
-// Sparkles
+/* sparkles */
 function sparkles(){
-  for(let i=0;i<25;i++){
+  for(let i=0;i<30;i++){
     let s=document.createElement("div");
     s.className="sparkle";
     s.style.left=Math.random()*100+"%";
     document.body.appendChild(s);
   }
+}
+
+/* slideshow */
+let slides=document.querySelectorAll(".slide");
+let k=0;
+function slideshow(){
+  setInterval(()=>{
+    slides[k].classList.remove("active");
+    k=(k+1)%slides.length;
+    slides[k].classList.add("active");
+  },3000);
+}
+
+/* player */
+function toggleMusic(){
+  if(music.paused) music.play();
+  else music.pause();
 }
 </script>
 
