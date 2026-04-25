@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Deesha's Special Day 🎉</title>
+
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial;
+  background: black;
+  color: white;
+  text-align: center;
+}
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.hidden { display: none; }
+
+.glow {
+  font-size: 40px;
+  text-shadow: 0 0 20px pink;
+}
+
+button {
+  padding: 12px 20px;
+  font-size: 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: white;
+  color: black;
+}
+
+/* Floating animation */
+@keyframes float {
+  from { transform: translateY(100vh); }
+  to { transform: translateY(-10vh); }
+}
+
+.balloon {
+  position: absolute;
+  width: 40px;
+  height: 60px;
+  background: pink;
+  border-radius: 50%;
+  animation: float 6s linear infinite;
+}
+
+.butterfly {
+  position: absolute;
+  font-size: 25px;
+  animation: float 8s linear infinite;
+}
+
+.sparkle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: white;
+  animation: float 3s linear infinite;
+}
+
+img {
+  width: 130px;
+  margin: 10px;
+  border-radius: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Countdown -->
+<div class="container" id="countdown">
+  <h1 class="glow">Deesha's Special Day 🎂</h1>
+  <h2 id="timer">5</h2>
+</div>
+
+<!-- Stage -->
+<div class="container hidden" id="stage">
+  <h1 class="glow">Lights ON ✨</h1>
+  <button onclick="startMusic()">Play Music 🎵</button>
+</div>
+
+<!-- Message -->
+<div class="container hidden" id="message">
+  <h2>
+  On This Beautiful Day, I Only Pray To God... ❤️<br><br>
+  "May Your Birthday Be As Bright As Your Smile.<br>
+  And As Beautiful As Your Heart."♡<br><br>
+  Happy Birthday Deesha 🎉
+  </h2>
+</div>
+
+<!-- Gallery -->
+<div class="container hidden" id="gallery">
+  <h2>Memories 📸</h2>
+  <img src="D1.jpg">
+  <img src="D2.jpg">
+</div>
+
+<audio id="music" src="Deesha song.mp3"></audio>
+
+<script>
+// Countdown
+let time = 5;
+let timer = setInterval(() => {
+  time--;
+  document.getElementById("timer").innerText = time;
+  if(time === 0){
+    clearInterval(timer);
+    countdown.style.display="none";
+    stage.classList.remove("hidden");
+  }
+},1000);
+
+// Start show
+function startMusic(){
+  music.play();
+  stage.classList.add("hidden");
+  message.classList.remove("hidden");
+  balloons();
+
+  setTimeout(()=>{
+    message.classList.add("hidden");
+    gallery.classList.remove("hidden");
+    butterflies();
+    sparkles();
+  },6000);
+}
+
+// Balloons
+function balloons(){
+  for(let i=0;i<10;i++){
+    let b=document.createElement("div");
+    b.className="balloon";
+    b.style.left=Math.random()*100+"%";
+    document.body.appendChild(b);
+  }
+}
+
+// Butterflies
+function butterflies(){
+  for(let i=0;i<8;i++){
+    let b=document.createElement("div");
+    b.className="butterfly";
+    b.innerHTML="🦋";
+    b.style.left=Math.random()*100+"%";
+    document.body.appendChild(b);
+  }
+}
+
+// Sparkles
+function sparkles(){
+  for(let i=0;i<25;i++){
+    let s=document.createElement("div");
+    s.className="sparkle";
+    s.style.left=Math.random()*100+"%";
+    document.body.appendChild(s);
+  }
+}
+</script>
+
+</body>
+</html>
